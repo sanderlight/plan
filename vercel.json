@@ -2,7 +2,7 @@
 
     "builds": [{
 
-            "src": "growth2/wsgi/py",
+            "src": "growth2/wsgi.py",
             "use": "@vercel/python",
             "config": {"maxLambdaSize": "15mb", "runtime": "python9.3"}
 
