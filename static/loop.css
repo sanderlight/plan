@@ -1,0 +1,95 @@
+body {
+    background-color: rgba(254, 218, 224, 0.744);
+    align-items: center;
+    min-height: 100vh;
+    display: flex;
+    margin: 0;
+    padding: 20px;
+    justify-content: center;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    --primary-color: #fff;
+}
+
+h1 {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2em;
+}
+
+.container {
+    margin-top: 80px; /* Add some top margin to avoid overlap with the h1 */
+    width: 100%; /* Ensures container takes full width */
+    max-width: 800px; /* Limit max width for larger screens */
+    padding: 20px; /* Adds some internal padding */
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8); /* Adjusted background opacity */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    width: 100%; /* Full width on smaller screens */
+    max-width: 500px; /* Limit width on larger screens */
+    margin: 20px auto; /* Add spacing around the card */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: block; /* Ensures button is block-level */
+    width: 100%; /* Full width for mobile */
+    max-width: 200px; /* Set a max-width for larger screens */
+    margin: 10px auto; /* Center-align button */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Media Queries for Smaller Screens */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5em; /* Adjust font size for smaller screens */
+        top: 10px;
+        right: 10px;
+    }
+
+    .container {
+        margin-top: 60px; /* Adjust margin for mobile */
+        padding: 10px; /* Reduce padding for mobile */
+    }
+
+    .card {
+        margin: 15px auto; /* Adjust margin for smaller screens */
+        padding: 15px; /* Adjust padding for better fit */
+    }
+
+    button {
+        width: 100%; /* Full width for buttons on mobile */
+        padding: 10px; /* Adjust padding */
+    }
+}

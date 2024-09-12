@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'o.css' %}">
+    <title>Year Plan</title>
+</head>
+<body>
+    <h1> Year Plan</h1>
+
+
+
+    <div class="card">
+        
+        <p>{{ year_plan }}</p>
+    </div>
+
+    <!-- Hidden form to submit year_plan to generate_month_to_month_plans -->
+    <form method="post" action="{% url 'generate_month_to_month_plans'  id=request.session.yearly_goal_id  %}">
+        {% csrf_token %}
+        <input type="hidden" name="year_plan" value="{{ year_plan }}">
+        <input type="hidden" name="yearly_goal" value="{{ yearly_goal.id }}">
+        <button type="submit">Next: Month-to-Month Plans</button>
+    </form>
+
+</body>
+</html>

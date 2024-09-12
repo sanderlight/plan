@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+<title>Analytics</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+  
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'y.css' %}">
+</head>
+<body>
+
+  <header class="header"><h1>Welcome to Your Profile, {{ profile.user.username }}</h1></header>
+    
+    
+  <section class="sidebar close">
+    
+          <a class="logo-box" href="#">
+              <i class='bx bxs-user-pin'></i>
+              <span class="logo-name">PROFILE</span>
+              
+          </a>
+          <ul class="sidebar-list">
+              <li>
+                  <div class="title">
+                      <a href="#">
+                          <i class="bx bx-grid-alt"></i>
+                          <span class="name">Dashboard</span>
+
+                      </a>
+                  </div>
+                  
+
+                  <div class="title">
+                      <a href="#">
+                          <i class='bx bx-analyse'></i>
+                          <span class="name">analytics</span>
+
+                      </a>
+                  </div>
+
+                  
+                  <div class="title">
+                      <a href="#">
+                          <i class='bx bxs-calendar-exclamation'></i>
+                          <span class="name">daygoal</span>
+
+                      </a>
+                  </div>
+
+                  <div class="title">
+                      <a href="#">
+                          <i class='bx bxs-cog' ></i>
+                          <span class="name">settings</span>
+
+                      </a>
+                  </div>
+              </li>
+          </ul>
+
+     
+    
+          <section class="home">
+              <div class="toggle-sidebar">
+              
+                
+
+              </div>
+          </section>
+      </section>
+
+
+
+
+  <div class="container">
+    <h1>Analytics</h1>
+
+
+    <!-- Dropdown for selecting yearly goal -->
+    <div class="form-group">
+        <select class="form-control" id="yearlyGoalSelect">
+            <option selected disabled>Select a yearly goal</option>
+            {% for goal in yearly_goals %}
+            <option value="{{ goal.id }}">{{ goal.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    
+    <div class="card">
+      <h2>Goal Progress</h2>
+      <div class="circle-chart">
+          <svg viewBox="0 0 36 36" class="circular-chart">
+              <path class="circle-bg"
+                    d="M18 2.0845
+                       a 15.9155 15.9155 0 0 1 0 31.831
+                       a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="circle"
+                    stroke-dasharray="0, 100"
+                    d="M18 2.0845
+                       a 15.9155 15.9155 0 0 1 0 31.831
+                       a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <text x="18" y="20.35" class="percentage">0%</text>
+          </svg>
+      </div>
+    </div>
+
+    <!-- Card for Goal Status -->
+    <div class="card">
+      <h2>Goal Status</h2>
+      <div class="status-circle green"></div>
+    </div>
+
+    <div class="card">
+      <h2>Days Left</h2>
+      <div class="days-left">0 Days</div>
+  </div>
+
+  <!-- Card for Performance -->
+  <div class="card">
+      <h2>Performance</h2>
+      <canvas id="performanceChart"></canvas>
+  </div>
+
+ 
+
+
+
+</div>
+
+
+<script>
+    document.querySelector('.logo-box').addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.toggle('close');
+    });
+</script>
+
+
+
+
+
+<script>
+
+    $(document).ready(function() {
+        var performanceChartInstance = null; // Variable to store the chart instance
+    
+        $('#yearlyGoalSelect').change(function() {
+            fetchAnalyticsData();
+        });
+    
+        function fetchAnalyticsData() {
+            var selectedYearlyGoalId = $('#yearlyGoalSelect').val();
+            $.ajax({
+                url: '/api/analytics/',  
+                type: 'GET',
+                data: {
+                    'yearly_goal_id': selectedYearlyGoalId
+                },
+                success: function (data) {
+                    if (data && data.analytics_data) {
+                        updateAnalyticsUI(data.analytics_data);
+                    } else {
+                        console.error('Invalid response format:', data);
+                    }
+                },
+                error: function () {
+                    alert('Failed to fetch analytics data.');
+                }
+            });
+        }
+    
+        function updateAnalyticsUI(analyticsData) {
+            analyticsData.forEach(function(goal) {
+                // Update the goal progress circle
+                var progressPercentage = goal.goal_progress;
+                var circle = $('.circle-chart .circle');
+                var radius = circle.attr('r');
+                var circumference = 2 * Math.PI * radius;
+                var offset = circumference - (progressPercentage / 100) * circumference;
+                circle.css('stroke-dasharray', `${circumference} ${circumference}`);
+                circle.css('stroke-dashoffset', offset);
+                $('.circle-chart .percentage').text(progressPercentage.toFixed(0) + '%');
+    
+                // Update the goal status
+                var statusElement = $('.goal-status');
+                statusElement.removeClass('red yellow green').addClass(goal.goal_status);
+    
+                // Update the days left
+                $('.days-left').text(goal.days_left + ' Days');
+    
+                // Update the performance chart
+                updatePerformanceChart(goal.goal_id, goal.performance);
+            });
+        }
+    
+        function updatePerformanceChart(goalId, performance) {
+            var ctx = document.getElementById('performanceChart').getContext('2d');
+    
+            // Destroy existing chart instance if it exists
+            if (performanceChartInstance) {
+                performanceChartInstance.destroy();
+            }
+    
+            // Create a new chart instance
+            performanceChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: performance.labels,
+                    datasets: [{
+                        label: 'Performance',
+                        data: performance.data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    });
+    
+</script>
+    
+  
+
+
+
+</body>
+</html>

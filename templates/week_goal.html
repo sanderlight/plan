@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Week-to-Week Plan</title>
+
+    {% load static %}   
+    <link rel="stylesheet" href="{% static 'huut.css' %}">
+   
+</head>
+<body>
+    <div class="container">
+        <h1>Week-to-Week Plan for Goal: {{ goal.goal_text }}</h1>
+        
+        <div class="week-plans">
+            {% for week_plan in week_to_week_plans %}
+                <div class="week-plan card">
+                    <h3>Week {{ week_plan.week_number }}</h3>
+                    <p>{{ week_plan.week_description }}</p>
+                    <!-- Button to navigate to the day-to-day plan for this week -->
+                    <a href="{% url 'generate_week_to_day_plan' week_plan.id %}" class="btn btn-primary">View Day Plans</a>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <a href="{% url 'index' %}" class="btn btn-secondary">Back to Goals</a>
+    </div>
+</body>
+</html>

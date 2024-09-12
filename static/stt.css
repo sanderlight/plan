@@ -1,0 +1,122 @@
+body {
+    background-color: rgba(254, 218, 224, 0.744);
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center;
+    min-height: 100vh;
+    margin: 0; /* Reset margin for the body */
+    padding: 0; /* Reset padding for the body */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    --primary-color: #fff;
+}
+
+.options-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Allow cards to wrap to the next line if necessary */
+    margin: 20px 0; /* Space around the container */
+    width: 100%; /* Full width for better alignment */
+    max-width: 1200px; /* Maximum width for larger screens */
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px; /* Space between cards */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 280px; /* Set a consistent width */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Slightly move up on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.card-body {
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ensure the card body takes full width */
+    flex-direction: column; /* Stack radio buttons and labels */
+    padding: 10px; /* Add padding inside the card body */
+}
+
+.card-body input[type="radio"] {
+    margin-bottom: 10px; /* Space between radio buttons */
+}
+
+.card-body label {
+    font-weight: bold;
+    text-align: center; /* Center text for labels */
+}
+
+.card-body input[type="radio"]:checked + label {
+    background-color: #ffa3d4; /* Change to desired color */
+    border-radius: 10px; /* Match the card's border-radius */
+    padding: 10px; /* Match the card's padding */
+    display: block; /* Make the label block for full width */
+    width: 100%; /* Full width for label */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000; /* Ensure it covers the entire page */
+}
+
+.spinner {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Media Queries for Smaller Screens */
+@media (max-width: 600px) {
+    .options-container {
+        flex-direction: column; /* Stack cards vertically */
+        align-items: center; /* Center align cards */
+    }
+
+    .card {
+        width: 90%; /* Make cards full width on small screens */
+        margin: 10px 0; /* Space between cards */
+    }
+
+    .card-body label {
+        font-size: 1rem; /* Adjust font size for readability */
+    }
+
+    .card-body input[type="radio"]:checked + label {
+        font-size: 1rem; /* Consistent font size */
+        padding: 15px; /* Add more padding */
+    }
+}

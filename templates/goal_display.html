@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Long Term Goal</title>
+</head>
+<body>
+    <h1>Generated Long Term Gol</h1>
+    <p>{{ long_term_goal }}</p>
+
+    <!-- Form to generate year-to-year plan -->
+    <form method="post" action="{% url 'year_plan' %}">
+        {% csrf_token %}
+        <input type="hidden" name="long_term_goal" value="{{ long_term_goal }}">
+        <button type="submit">Generate Year-to-Year Plan</button>
+    </form>
+</body>
+</html>

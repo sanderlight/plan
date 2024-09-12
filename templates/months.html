@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Month-to-Month Plan</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+      
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'ZOOL.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Month-to-Month Plan for Goal: {{ goal.goal_text }}</h1>
+
+        <!-- Carousel Structure -->
+        <div id="monthPlansCarousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                {% if month_to_month_plans %}
+                    {% for month_plan in month_to_month_plans %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <div class="card">
+                                <h3>Month {{ month_plan.month_number }}</h3>
+                                <p>{{ month_plan.month_description }}</p>
+    
+
+                                <form method="POST" action="{% url 'generate_week_plan_from_month' month_plan.id  %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="month_id" value="{{ month_plan.id }}">
+                                    <button type="submit" class="btn btn-success">Generate Week Plan</button>
+                                </form>
+                              
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="carousel-item active">
+                        <div class="card">
+                            <p>No month plans available for this goal.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Carousel Controls -->
+            <a class="carousel-control-prev" href="#monthPlansCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#monthPlansCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    </div>
+
+</body>
+</html>

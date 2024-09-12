@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'dre.css' %}">
+</head>
+<body>
+    <header class="header"><h1>Welcome to Your Profile, {{ profile.user.username }}</h1></header>
+    
+    <section class="sidebar close">
+        <a class="logo-box" href="#">
+            <i class='bx bxs-user-pin'></i>
+            <span class="logo-name">PROFILE</span>
+        </a>
+        <ul class="sidebar-list">
+            <li>
+                <div class="title"><a href="#"><i class="bx bx-grid-alt"></i><span class="name">Dashboard</span></a></div>
+                <div class="title"><a href="#"><i class='bx bx-analyse'></i><span class="name">Analytics</span></a></div>
+                <div class="title"><a href="#"><i class='bx bxs-calendar-exclamation'></i><span class="name">Day Goals</span></a></div>
+                <div class="title"><a href="#"><i class='bx bxs-cog'></i><span class="name">Settings</span></a></div>
+            </li>
+        </ul>
+
+        <section class="home">
+            <div class="toggle-sidebar"></div>
+        </section>
+    </section>
+
+    <div class="cards-container">
+        <!-- Yearly Goal Card -->
+        <div class="card">
+            <div class="card-header">Yearly Goals</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="yearlyGoalSelect">Select Yearly Goal:</label>
+                    <select id="yearlyGoalSelect" class="form-control">
+                        <option value="">Select Yearly Goal</option>
+                        {% for goal in yearly_goals %}
+                            <option value="{{ goal.id }}">{{ goal.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="goal-details">
+                    <h5 id="yearlyGoalTitle"></h5>
+                    <p id="yearlyGoalDescription"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Goal Card -->
+        <div class="card">
+            <div class="card-header">Monthly Goals</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="monthlyGoalSelect">Select Monthly Goal:</label>
+                    <select id="monthlyGoalSelect" class="form-control">
+                        <option value="">Select Monthly Goal</option>
+                    </select>
+                </div>
+                <div class="goal-details">
+                    <h5 id="monthlyGoalTitle"></h5>
+                    <p id="monthlyGoalDescription"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Goal Card -->
+        <div class="card">
+            <div class="card-header">Weekly Goals</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="weeklyGoalSelect">Select Weekly Goal:</label>
+                    <select id="weeklyGoalSelect" class="form-control">
+                        <option value="">Select Weekly Goal</option>
+                    </select>
+                </div>
+                <div class="goal-details">
+                    <h5 id="weeklyGoalTitle"></h5>
+                    <p id="weeklyGoalDescription"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Goal Card -->
+        <div class="card">
+            <div class="card-header">Daily Goals</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="dailyGoalSelect">Select Daily Goal:</label>
+                    <select id="dailyGoalSelect" class="form-control">
+                        <option value="">Select Daily Goal</option>
+                    </select>
+                </div>
+                <div class="goal-details">
+                    <h5 id="dailyGoalTitle"></h5>
+                    <p id="dailyGoalDescription"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Sidebar toggle script -->
+    <script>
+        document.querySelector('.logo-box').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('close');
+        });
+    </script>
+
+    <!-- Goals fetching script -->
+    <script>
+        $(document).ready(function() {
+            // Function to fetch and populate Yearly Goals dropdown
+            function fetchYearlyGoals() {
+                $.getJSON("{% url 'get_yearly_goals' %}", function(data) {
+                    console.log('Yearly Goals Data:', data); // Debugging line
+                    var yearlyGoalSelect = $('#yearlyGoalSelect');
+                    yearlyGoalSelect.empty().append('<option selected disabled>Select a yearly goal</option>');
+        
+                    data.forEach(function(goal) {
+                        yearlyGoalSelect.append('<option value="' + goal.id + '">' + goal.title + '</option>');
+                    });
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching yearly goals:', textStatus, errorThrown);
+                });
+            }
+        
+            // Function to fetch and populate Monthly Goals based on selected Yearly Goal
+            function fetchMonthlyGoals(yearlyGoalId) {
+                $.getJSON("{% url 'get_monthly_goals' %}", { yearly_goal_id: yearlyGoalId }, function(data) {
+                    console.log('Monthly Goals Data:', data); // Debugging line
+                    var monthlyGoalSelect = $('#monthlyGoalSelect');
+                    monthlyGoalSelect.empty().append('<option selected disabled>Select a monthly goal</option>');
+        
+                    data.forEach(function(goal) {
+                        monthlyGoalSelect.append('<option value="' + goal.id + '">' + goal.month + '</option>');
+                    });
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching monthly goals:', textStatus, errorThrown);
+                });
+            }
+        
+            // Function to fetch and populate Weekly Goals based on selected Monthly Goal
+            function fetchWeeklyGoals(monthlyGoalId) {
+                $.getJSON("{% url 'get_weekly_goals' %}", { monthly_goal_id: monthlyGoalId }, function(data) {
+                    console.log('Weekly Goals Data:', data); // Debugging line
+                    var weeklyGoalSelect = $('#weeklyGoalSelect');
+                    weeklyGoalSelect.empty().append('<option selected disabled>Select a weekly goal</option>');
+        
+                    data.forEach(function(goal) {
+                        weeklyGoalSelect.append('<option value="' + goal.id + '">' + goal.week + '</option>');
+                    });
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching weekly goals:', textStatus, errorThrown);
+                });
+            }
+        
+            // Function to fetch and populate Daily Goals based on selected Weekly Goal
+            function fetchDailyGoals(weeklyGoalId) {
+                $.getJSON("{% url 'get_daily_goals' %}", { weekly_goal_id: weeklyGoalId }, function(data) {
+                    console.log('Daily Goals Data:', data); // Debugging line
+                    var dailyGoalSelect = $('#dailyGoalSelect');
+                    dailyGoalSelect.empty().append('<option selected disabled>Select a daily goal</option>');
+        
+                    data.forEach(function(goal) {
+                        dailyGoalSelect.append('<option value="' + goal.id + '">' + goal.date + '</option>');
+                    });
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching daily goals:', textStatus, errorThrown);
+                });
+            }
+        
+            // Event listener for Yearly Goal selection
+            $('#yearlyGoalSelect').on('change', function() {
+                var yearlyGoalId = $(this).val();
+                $.getJSON("{% url 'get_yearly_goal_details' %}", { id: yearlyGoalId }, function(data) {
+                    console.log('Selected Yearly Goal Data:', data); // Debugging line
+                    $('#yearlyGoalTitle').text(data.title); // Displaying title
+                    $('#yearlyGoalDescription').text(data.description); // Displaying description
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching yearly goal details:', textStatus, errorThrown);
+                });
+                fetchMonthlyGoals(yearlyGoalId); // Fetch associated Monthly Goals
+            });
+        
+            // Event listener for Monthly Goal selection
+            $('#monthlyGoalSelect').on('change', function() {
+                var monthlyGoalId = $(this).val();
+                $.getJSON("{% url 'get_monthly_goal_details' %}", { id: monthlyGoalId }, function(data) {
+                    console.log('Selected Monthly Goal Data:', data); // Debugging line
+                    $('#monthlyGoalTitle').text(data.title); // Displaying title
+                    $('#monthlyGoalDescription').text(data.description); // Displaying description
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching monthly goal details:', textStatus, errorThrown);
+                });
+                fetchWeeklyGoals(monthlyGoalId); // Fetch associated Weekly Goals
+            });
+        
+            // Event listener for Weekly Goal selection
+            $('#weeklyGoalSelect').on('change', function() {
+                var weeklyGoalId = $(this).val();
+                $.getJSON("{% url 'get_weekly_goal_details' %}", { id: weeklyGoalId }, function(data) {
+                    console.log('Selected Weekly Goal Data:', data); // Debugging line
+                    $('#weeklyGoalTitle').text(data.title); // Displaying title
+                    $('#weeklyGoalDescription').text(data.description); // Displaying description
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching weekly goal details:', textStatus, errorThrown);
+                });
+                fetchDailyGoals(weeklyGoalId); // Fetch associated Daily Goals
+            });
+        
+            // Event listener for Daily Goal selection
+            $('#dailyGoalSelect').on('change', function() {
+                var dailyGoalId = $(this).val();
+                $.getJSON("{% url 'get_daily_goal_details' %}", { id: dailyGoalId }, function(data) {
+                    console.log('Selected Daily Goal Data:', data); // Debugging line
+                    $('#dailyGoalTitle').text(data.title); // Displaying title
+                    $('#dailyGoalDescription').text(data.description); // Displaying description
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching daily goal details:', textStatus, errorThrown);
+                });
+            });
+        
+            // Initialize the dropdowns
+            fetchYearlyGoals();
+        });
+    </script>
+</body>
+</html>

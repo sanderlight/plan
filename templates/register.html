@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     {% load static %}
+    <link rel="stylesheet" href="{% static 'tatz.css' %}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+ 
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+        <div class="wrapper">            
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h2>Register</h2>
+                    
+                    <div class="input-box">
+                        <div class="input-field">
+                        
+                            <input type="text" placeholder="username" name="username" id="id_username" required>
+                            {{ form.username.error }}
+                            
+                          
+
+                        </div>
+                        
+                        <div class="input-field"> 
+                                <input type="email" placeholder="email" name="email" id="id_email" required>
+                                {{ form.email.errors }}
+
+                               
+                        </div>
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <div class="input-field">
+
+                           
+                            <input type="password" placeholder="password" name="password1" id="id_password1" required>
+                            {{ form.password1.errors }}
+                            
+                        </div>
+
+                        <div class="input-field">
+
+                            
+                            <input type="password" placeholder="Confirm Password" name="password2" id="id_password2" required>
+                            {{ form.password2.errors }}
+                            
+
+                        </div>
+
+                    </div>
+                    
+                    <button type="submit" class="btn">Register</button>
+
+                    <button type="submit" class="button"><a href="/login">Login</a></button>
+
+                </form>
+            </div>
+        
+</body>
+</html>

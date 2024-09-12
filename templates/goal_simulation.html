@@ -1,0 +1,123 @@
+<!-- goal_simulation.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+    <title>Goal Simulation Studio</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'hu.css' %}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+<body>
+    
+    <header class="header"><h1>Welcome to Your Profile, {{ profile.user.username }}</h1></header>
+    
+    
+    <section class="sidebar close">
+      
+            <a class="logo-box" href="#">
+                <i class='bx bxs-user-pin'></i>
+                <span class="logo-name">PROFILE</span>
+                
+            </a>
+            <ul class="sidebar-list">
+                <li>
+                    <div class="title">
+                        <a href="#">
+                            <i class="bx bx-grid-alt"></i>
+                            <span class="name">Dashboard</span>
+
+                        </a>
+                    </div>
+                    
+
+                    <div class="title">
+                        <a href="#">
+                            <i class='bx bx-analyse'></i>
+                            <span class="name">analytics</span>
+
+                        </a>
+                    </div>
+
+                    
+                    <div class="title">
+                        <a href="#">
+                            <i class='bx bxs-calendar-exclamation'></i>
+                            <span class="name">daygoal</span>
+
+                        </a>
+                    </div>
+
+                    <div class="title">
+                        <a href="#">
+                            <i class='bx bxs-cog' ></i>
+                            <span class="name">settings</span>
+
+                        </a>
+                    </div>
+                </li>
+            </ul>
+
+       
+      
+            <section class="home">
+                <div class="toggle-sidebar">
+                
+                  
+
+                </div>
+            </section>
+        </section>
+
+     
+    
+        <div class="main-container">
+            <div class="container">
+                <form method="POST" action="{% url 'goal_simulation' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="yearly_goal_id">Yearly Goal</label>
+                        {{ form.yearly_goal }}
+                    </div>
+                    <div class="form-group">
+                        <label for="initial_investment">Initial Investment</label>
+                        {{ form.initial_investment }}
+                    </div>
+                    <div class="form-group">
+                        <label for="target_milestone">Target Milestone</label>
+                        {{ form.target_milestone }}
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        {{ form.location }}
+                    </div>
+                    <button type="submit">Run Simulation</button>
+                </form>
+            </div>
+
+
+        {% if probability_percentage is not None and result_summary %}
+        <div class="results-container">
+            <h2>Simulation Results</h2>
+            <p>{{ result_summary }}</p>
+            <p>Probability of Success: {{ probability_percentage }}%</p>
+        </div>
+        {% endif %}
+
+
+    <script>
+        document.querySelector('.logo-box').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('close');
+        });
+    </script>
+
+
+
+</body>
+</html>

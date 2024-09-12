@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Long-Term Goal</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'stars.css' %}">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    
+</head>
+<body>
+
+    <div id="loading-screen" style="display:none;">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+
+    <h2>Select Your Long-Term Goal</h2>
+
+    <p>{{ goal }}</p>
+    <form method="post" action="{% url 'generate_options'  %}">
+        {% csrf_token %}
+        <div class="container">
+            <input type="hidden" name="selected_goal" value="{{ goal }}">
+            <label>Choose the Tier:</label>
+            <div class="input-container">
+                <input type="radio" id="low" name="selected_tier" value="low" required>
+                <div class="radio-tile">
+                    <ion-icon name="remove-outline"></ion-icon>
+                    <label for="low">Low </label>
+                </div>
+            </div>
+            <div class="input-container">
+                <input type="radio" id="medium" name="selected_tier" value="medium" required>
+                <div class="radio-tile">
+                    <ion-icon name="reorder-two-outline"></ion-icon>
+                    <label for="medium">Medium </label>
+                </div>
+            </div>
+            <div class="input-container">
+                <input type="radio" id="high" name="selected_tier" value="high" required>
+                <div class="radio-tile">
+                    <ion-icon name="reorder-three-outline"></ion-icon>
+                    <label for="high">High </label>
+                </div>
+            </div>
+            <button type="submit">Generate </button>
+        </div>
+    </form>
+
+
+    <div class="cont">
+
+        <p class="text"> low tier: Low tier is you putting little effort into the goal, your just getting the task done to start your journey </p>
+
+        <p class="text"> medium tier: Medium tier is you trying to put all your effort in but you have other obligations you are commited to </p>
+
+        <p class="text">High tier: High tier is you putting all your effort into your goal no distractions </p>
+
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#submit-btn').on('click', function() {
+                var formData = $('#goal-form').serialize();
+                
+                $.ajax({
+                    url: $('#goal-form').attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    beforeSend: function() {
+                        $('#loading-screen').css('display', 'flex');
+                    },
+                    success: function(data) {
+                        // Handle success and hide loading screen
+                        $('#loading-screen').css('display', 'none');
+                        // Optionally, process the response data or redirect to another page
+                        console.log('Form submitted successfully!');
+                        // Example: Redirect to a new page
+                        window.location.href = '/success-page/';
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error and hide loading screen if necessary
+                        $('#loading-screen').css('display', 'none');
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Week to Week Plans</title>
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'loop.css' %}">
+    
+</head>
+<body>
+    <h1>Week-to-Week Plans</h1>
+
+    <div class="container mt-5">
+        <div class="form-group">
+            <label for="weekSelect">Select a Week:</label>
+            <select id="weekSelect" class="form-control">
+                <option value="" disabled selected>Select a week</option>
+                {% for week_name, week_plan in week_to_week_plans_by_month %}
+                <option value="{{ forloop.counter0 }}">{{ week_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% for week_name, week_plan in week_to_week_plans_by_month %}
+        <div id="weekPlan{{ forloop.counter0 }}" class="card hidden">
+            <h5 class="card-title">{{ week_name }}</h5>
+            <p class="card-text">{{ week_plan }}</p>
+            <form action="{% url 'daily_goals' id=id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="week_plan_description" value="{{ week_plan }}">
+                <button type="submit">Generate Daily Goal</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('weekSelect').addEventListener('change', function() {
+            var selectedWeek = this.value;
+
+            // Hide all week plans
+            var weekPlans = document.querySelectorAll('.card');
+            weekPlans.forEach(function(plan) {
+                plan.classList.add('hidden');
+            });
+
+            // Show the selected week plan
+            var selectedWeekPlan = document.getElementById('weekPlan' + selectedWeek);
+            if (selectedWeekPlan) {
+                selectedWeekPlan.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

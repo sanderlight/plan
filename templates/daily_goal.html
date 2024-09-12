@@ -1,0 +1,39 @@
+<!-- templates/daily_goal.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'dr.css' %}">
+
+    <title>Daily Goal</title>
+</head>
+<body>
+    <h1>Daily Goal</h1>
+    <div class="container">
+        <div class="card">
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% elif daily_goals %}
+                <ul>
+                    {% for goal in daily_goals %}
+                        <li>
+                            <p><strong>Title:</strong> {{ goal.title }}</p>
+                            <p><strong>Description:</strong> {{ goal.description }}</p>
+                            <p><strong>Date:</strong> {{ goal.date }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No daily goals available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

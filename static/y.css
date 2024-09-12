@@ -1,0 +1,397 @@
+body {
+    background-color: rgba(254, 218, 224, 0.744);
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: 60px 1fr;
+  grid-template-areas:
+      "side header"
+      "side main";
+  margin: 0;
+  overflow: hidden;
+}
+
+  .container {
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+
+
+
+
+  .sidebar {
+    grid-area: side;
+    background-color: transparent;
+    width: 200px;
+    transition: all .5s ease;
+}
+
+.sidebar.close {
+    width: 90px;
+}
+
+.logo-box {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    color: var(--pink);
+    transition: all .5s ease;
+    cursor: pointer;
+}
+
+.logo-box:hover {
+    color: var(--pink);
+}
+
+.logo-box i {
+    font-size: 30px;
+    height: 50px;
+    min-width: 78px;
+    text-align: center;
+    line-height: 50px;
+    transition: all .5s ease;
+}
+
+.sidebar.close .logo-box i {
+    transform: rotate(360deg);
+}
+
+.logo-name {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.sidebar-list {
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-list li .title .link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.sidebar-list li .title i {
+    height: 50px;
+    min-width: 78px;
+    text-align: center;
+    line-height: 50px;
+    color: var(--antiquewhite);
+    font-size: 20px;
+}
+
+.sidebar-list li .title .name {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--antiquewhite);
+}
+
+.sidebar.close .logo-name,
+.sidebar.close .title .name {
+    display: none;
+}
+
+.sidebar.close .sidebar-list {
+    overflow: visible;
+}
+
+.sidebar.close .sidebar-list li {
+    position: relative;
+}
+
+.sidebar.close .sidebar-list li .submenu {
+    position: relative;
+}
+
+.home {
+    grid-area: main;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.toggle-sidebar {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggle-sidebar .bx-menu {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+/* Adjust home section margin for closed sidebar */
+.sidebar.close ~ .home {
+    margin-left: 90px;
+}
+
+
+
+
+
+.main {
+    background-color: transparent;
+    padding: 20px;
+    grid-area: main;
+    overflow-y: auto; /* Enable vertical scroll if content overflows */
+}
+
+
+
+.card {
+    border: 1px solid #000000;
+    border-radius: 8px;
+    overflow: hidden;
+    display: inline-block;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0); /* Transparent background */
+
+    position: relative;
+    cursor: pointer;
+    margin: 20px;
+    padding: 20px;
+    width: 45%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for background and shadow */
+}
+  
+
+.card:hover {
+    background-color: #ededed; /* Solid white on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.5); /* Increased shadow with glowing effect */
+}
+
+.card::before {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    content: "";
+   
+    border-radius: 15px;
+    z-index: -1;
+    transition: 0.3s;
+    animation: animate 2s linear infinite;
+}
+
+.card:hover::before {
+    height: 100%;
+    width: 100%;
+}
+
+
+.text-primary {
+    color: #000000 !important; 
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    font-weight: 700;
+}
+
+.card-header,
+.card-footer {
+    background-color: #00000000;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.card-body {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto; /* Enable scrolling within card body */
+}
+
+.goal-content {
+    display: none;
+}
+
+.card-title {
+    margin-bottom: 0;
+}
+
+.progress {
+    height: 20px;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #fff;
+}
+
+.completed {
+    color: green;
+    font-weight: bold;
+}
+.not-completed {
+    color: red;
+    font-weight: bold;
+}
+/* Customize progress bar colors */
+.progress-bar.bg-success {
+    background-color: #28a745;
+}
+
+.progress-bar.bg-info {
+    background-color: #17a2b8;
+}
+
+.progress-bar.bg-warning {
+    background-color: #ffc107;
+}
+
+.card:nth-child(1) {
+    grid-area: c1;
+}
+
+.card:nth-child(2) {
+    grid-area: c2;
+}
+
+.card:nth-child(3) {
+    grid-area: c3;
+}
+
+.card:nth-child(4) {
+    grid-area: c4;
+}
+
+.card:nth-child(5) {
+    grid-area: c5;
+}
+
+.card:nth-child(6) {
+    grid-area: c6;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  h1 {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .circle-chart {
+    max-width: 150px;
+    margin: 0 auto;
+  }
+  
+  .circular-chart {
+    display: block;
+    max-width: 80%;
+    max-height: 250px;
+  }
+  
+  .circle-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.8;
+  }
+  
+  .circle {
+    fill: none;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    stroke: #4caf50;
+    animation: progress 1s ease-out forwards;
+  }
+  
+  @keyframes progress {
+    0% { stroke-dasharray: 0, 100; }
+  }
+  
+  .percentage {
+    fill: #333;
+    font-family: sans-serif;
+    font-size: 0.5em;
+    text-anchor: middle;
+  }
+  
+  .status-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+  
+  .green {
+    background-color: #4caf50;
+  }
+  
+  .yellow {
+    background-color: #ffeb3b;
+  }
+  
+  .red {
+    background-color: #f44336;
+  }
+  
+  .days-left {
+    font-size: 2em;
+    font-weight: bold;
+  }
+  
+
+
+
+
+
+  /* Media queries for responsiveness */
+@media (max-width: 768px) {
+    body {
+      grid-template-columns: 1fr; /* Single column layout for smaller screens */
+    }
+  
+    .sidebar {
+      width: 100%; /* Full width sidebar on mobile */
+      grid-area: header;
+      height: auto; /* Adjust height */
+    }
+  
+    .main {
+      padding: 10px; /* Reduced padding for mobile */
+    }
+  
+    .card {
+      width: 90%; /* Full width cards */
+      max-width: 350px; /* Set a max width for readability */
+    }
+  
+    .toggle-sidebar {
+      justify-content: flex-end; /* Adjust toggle to right on mobile */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .card {
+      width: 100%;
+      margin: 10px 0; /* Less margin on very small screens */
+    }
+  
+    .sidebar,
+    .logo-box {
+      display: none; /* Hide sidebar on very small screens */
+    }
+  }

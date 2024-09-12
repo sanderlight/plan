@@ -1,0 +1,117 @@
+body {
+    background-color: rgba(254, 218, 224, 0.744);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    --primary-color: #fff;
+}
+
+
+
+
+
+
+
+/* Container Styling */
+.container {
+    padding: 20px; /* Adds space around the content */
+}
+
+/* Heading Styles */
+h1, h2 {
+    text-align: center; /* Center-align the headers */
+    color: #343a40; /* Dark color for headings */
+}
+
+h1 {
+    font-size: 2.5em; /* Larger size for the main heading */
+}
+
+h2 {
+    font-size: 1.8em; /* Slightly smaller for subheadings */
+    margin-bottom: 30px; /* Add space below the subheading */
+}
+
+/* Card Styles */
+.card {
+    background-color: #ffffff; /* White background for cards */
+    border: 1px solid #e0e0e0; /* Light grey border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin: 15px auto; /* Center the card with margin */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth hover effects */
+}
+
+.card:hover {
+    transform: translateY(-10px); /* Lift up on hover */
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+}
+
+/* Card Content */
+.card-body {
+    padding: 20px; /* Adds space inside the card */
+}
+
+.card-title {
+    font-size: 1.5em; /* Larger font for card titles */
+    margin-bottom: 10px; /* Space below title */
+    color: #007bff; /* Bootstrap primary color */
+    text-align: center; /* Center-align card titles */
+}
+
+.card-text {
+    font-size: 1em; /* Standard font size for content */
+    color: #495057; /* Dark grey text for readability */
+    text-align: center; /* Center-align text inside cards */
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block; /* Allows for better control and spacing */
+    margin: 10px; /* Space around buttons */
+    padding: 10px 20px; /* Add padding to buttons */
+    font-size: 1em; /* Standard font size */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s; /* Smooth color change */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Primary blue color */
+    color: #fff; /* White text */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Secondary grey color */
+    color: #fff; /* White text */
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268; /* Darker grey on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        margin: 10px; /* Reduce margin on smaller screens */
+    }
+    .card-body {
+        padding: 15px; /* Reduce padding for smaller screens */
+    }
+    .container {
+        padding: 15px; /* Reduce container padding */
+    }
+}

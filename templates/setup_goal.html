@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'w.css' %}">
+    
+    <title>Setup Goal</title>
+    
+    <style>
+        /* Styles omitted for brevity */
+    </style>
+    <script>
+        function updateFormActionAndLimits() {
+            const timeframeUnit = document.querySelector('input[name="timeframe_unit"]:checked').value;
+            const form = document.getElementById('goalForm');
+            const timeframeValueInput = document.getElementById('timeframe_value');
+        
+            // Dynamically set the action URL based on the selected timeframe unit
+            switch (timeframeUnit) {
+                case 'days':
+                    form.action = "{% url 'generate_day_plan' %}";
+                    timeframeValueInput.min = 1; // Minimum 1 day
+                    timeframeValueInput.max = 6; // Maximum 365 days
+                    break;
+                case 'weeks':
+                    form.action = "{% url 'generate_week_to_week_plan' %}";
+                    timeframeValueInput.min = 1; // Minimum 1 week
+                    timeframeValueInput.max = 3; // Maximum 52 weeks
+                    break;
+                case 'months':
+                    form.action = "{% url 'generate_month_plan' %}";
+                    timeframeValueInput.min = 1; // Minimum 1 month
+                    timeframeValueInput.max = 11; // Maximum 12 months
+                    break;
+                case 'years':
+                    form.action = "{% url 'generate_year_plan' %}";
+                    timeframeValueInput.min = 1; // Minimum 1 year
+                    timeframeValueInput.max = 5; // Maximum 5 years
+                    break;
+                default:
+                    form.action = "#";
+                    timeframeValueInput.min = 1;
+                    timeframeValueInput.max = 100; // Default maximum
+                    break;
+            }
+            
+            // Reset the value if it goes out of the new range
+            if (timeframeValueInput.value < timeframeValueInput.min) {
+                timeframeValueInput.value = timeframeValueInput.min;
+            } else if (timeframeValueInput.value > timeframeValueInput.max) {
+                timeframeValueInput.value = timeframeValueInput.max;
+            }
+        }
+        
+        // Add event listener to update form action and limits when timeframe unit changes
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[name="timeframe_unit"]').forEach(function(input) {
+                input.addEventListener('change', updateFormActionAndLimits);
+            });
+            
+            // Initialize the form action and limits on page load
+            updateFormActionAndLimits();
+        });
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Setup Your Goal</h1>
+
+        {% if long_term_goal %}
+        <div class="long-term-goal-display">
+            <h2>Your Long-Term Goal</h2>
+            <p>{{ long_term_goal }}</p>
+        </div>
+        {% endif %}
+        
+
+        
+        <!-- Goal setup form -->
+        <form id="goalForm" method="POST" > <!-- Add a default action -->
+            {% csrf_token %}
+            
+            <!-- Input fields for goal setup -->
+            <input type="hidden" name="long_term_goal" id="long_term_goal" value="{{ long_term_goal  }}">
+        
+            <div class="radio-tile-group">
+                <!-- Years Option -->
+                <div class="input-container">
+                    <input type="radio" id="years" name="timeframe_unit" value="years" required>
+                    <div class="radio-tile">
+                        <ion-icon name="calendar"></ion-icon>
+                        <label for="years">Years</label>
+                    </div>
+                </div>
+    
+                <!-- Months Option -->
+                <div class="input-container">
+                    <input type="radio" id="months" name="timeframe_unit" value="months" required>
+                    <div class="radio-tile">
+                        <ion-icon name="calendar"></ion-icon>
+                        <label for="months">Months</label>
+                    </div>
+                </div>
+    
+                <!-- Weeks Option -->
+                <div class="input-container">
+                    <input type="radio" id="weeks" name="timeframe_unit" value="weeks" required>
+                    <div class="radio-tile">
+                        <ion-icon name="calendar"></ion-icon>
+                        <label for="weeks">Weeks</label>
+                    </div>
+                </div>
+    
+                <!-- Days Option -->
+                <div class="input-container">
+                    <input type="radio" id="days" name="timeframe_unit" value="days" required>
+                    <div class="radio-tile">
+                        <ion-icon name="calendar"></ion-icon>
+                        <label for="days">Days</label>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="timeframe-value-container">
+                <label for="timeframe_value">Timeframe Value:</label>
+                <input type="number" id="timeframe_value" name="timeframe_value" min="1" required>
+            </div>
+
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+</body>
+</html>

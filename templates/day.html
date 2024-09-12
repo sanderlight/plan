@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content=" 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com 'unsafe-inline'">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'h.css' %}">
+    <title>Daily Goal Detail</title>
+</head>
+<body>
+    <header class="header"><h1>Welcome to Your Profile, {{ profile.user.username }}</h1></header>
+    
+    <section class="sidebar close">
+        <a class="logo-box" href="#">
+            <i class='bx bxs-user-pin'></i>
+            <span class="logo-name">PROFILE</span>
+        </a>
+        <ul class="sidebar-list">
+            <li>
+                <div class="title">
+                    <a href="#">
+                        <i class="bx bx-grid-alt"></i>
+                        <span class="name">Dashboard</span>
+                    </a>
+                </div>
+                <div class="title">
+                    <a href="#">
+                        <i class='bx bx-analyse'></i>
+                        <span class="name">Analytics</span>
+                    </a>
+                </div>
+                <div class="title">
+                    <a href="#">
+                        <i class='bx bxs-calendar-exclamation'></i>
+                        <span class="name">Day Goal</span>
+                    </a>
+                </div>
+                <div class="title">
+                    <a href="#">
+                        <i class='bx bxs-cog'></i>
+                        <span class="name">Settings</span>
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="home">
+        <div class="toggle-sidebar">
+            <!-- Add a button or icon for toggling the sidebar -->
+        </div>
+    </section>
+
+
+
+
+    <section class="home">
+        <div class="toggle-sidebar">
+            <!-- Add a button or icon for toggling the sidebar -->
+        </div>
+    </section>
+<main class="main">
+    
+    <div class="content-container">
+        <div id="calendar"></div>
+
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <!-- Yearly Goals Dropdown -->
+        <div class="form-group">
+            <select class="form-control" id="yearlyGoalSelect">
+                <option selected disabled>Select a yearly goal</option>
+                {% for goal in yearly_goals %}
+                <option value="{{ goal.id }}">{{ goal.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% for goal in yearly_goals %}
+        <div class="card goal-content" id="dailyGoalsCard" style="display: none;">
+            <div class="card-header">
+                <h2>Daily Goals for {{ goal.title }}</h2>
+            </div>
+            <div class="card-body">
+                {% for wgoal in goal.monthlygoal_set.all %}
+                    {% for dgoal in wgoal.dailygoal_set.all %}
+                    <div>
+                        <h1>Daily Goal Details</h1>
+                        <p>Title: {{ dgoal.title }}</p>
+                        <p>Description: {{ dgoal.description }}</p>
+                        <p>Date: {{ dgoal.date }}</p>
+
+                        {% endfor %}
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+            </div>
+        </main>
+
+            
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
+
+    <script>
+        document.querySelector('.logo-box').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('close');
+        });
+    
+    </script>
+
+
+    <script>
+        document.getElementById('goal-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Example of updating the UI with a success message
+                    const successMessage = document.createElement('p');
+                    successMessage.textContent = 'Goal status updated successfully!';
+                    successMessage.style.color = 'green';
+                    form.appendChild(successMessage);
+                    
+                    // Optionally, you could clear any existing message after a few seconds
+                    setTimeout(() => {
+                        successMessage.remove();
+                    }, 3000);
+                } else {
+                    alert('Failed to update goal status.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the goal status.');
+            });
+        });
+        </script>
+        
+  
+    <script>
+        $(document).ready(function () {
+            var associatedDates = [];
+            var selectedDate = moment().format('YYYY-MM-DD'); // Default to today
+        
+            // Initialize FullCalendar
+            var calendar = $('#calendar').fullCalendar({
+                selectable: true,
+                selectHelper: true,
+                events: [],
+                selectAllow: function(selectInfo) {
+                    var date = selectInfo.start.format('YYYY-MM-DD');
+                    return associatedDates.includes(date);  // Allow selection only if the date is associated with the selected yearly goal
+                },
+                select: function(start) {
+                    selectedDate = start.format('YYYY-MM-DD');
+                    fetchDailyGoals(selectedDate);
+                }
+            });
+        
+            // Handle Yearly Goal Selection
+            $('#yearlyGoalSelect').on('change', function() {
+                var selectedYearlyGoalId = $(this).val();
+        
+                // Update the calendar with highlighted days for the selected yearly goal
+                updateCalendarWithGoals(selectedYearlyGoalId);
+        
+                // Fetch and display the daily goals for the selected date (if any)
+                fetchDailyGoals(selectedDate);
+            });
+        
+            function fetchDailyGoals(date) {
+                var selectedYearlyGoalId = $('#yearlyGoalSelect').val();
+                if (!selectedYearlyGoalId) {
+                    return;
+                }
+            
+                $.ajax({
+                    url: '/day/',
+                    type: 'GET',
+                    data: {
+                        'date': date,
+                        'yearly_goal_id': selectedYearlyGoalId
+                    },
+                    success: function (data) {
+                        if (data.daily_goals && data.daily_goals.length > 0) {
+                            $('#dailyGoalsCard').html('');
+                            var goalContent = '';
+                            var csrfToken = '{{ csrf_token }}'; // Ensure the CSRF token is passed into the template
+            
+                            data.daily_goals.forEach(function (goal) {
+                                goalContent += `
+                                    <div class="goal-detail">
+                                        <h1>Daily Goal Details</h1>
+                                        <p>Title: ${goal.title}</p>
+                                        <p>Description: ${goal.description}</p>
+                                        <p>Date: ${goal.date}</p>
+                                        <p>Status: ${goal.completed ? 'Completed' : 'Not Completed'}</p>
+                                        <form class="update-goal-status" data-goal-id="${goal.id}">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                                            <input type="radio" name="completed" value="true" ${goal.completed ? 'checked' : ''}> Completed
+                                            <input type="radio" name="completed" value="false" ${!goal.completed ? 'checked' : ''}> Not Completed
+                                            <button type="submit">Update Status</button>
+                                        </form>
+                                    </div>
+                                `;
+                            });
+            
+                            $('#dailyGoalsCard').html(goalContent).show();
+            
+                            // Attach event listeners to the forms for status update
+                            $('.update-goal-status').on('submit', function(event) {
+                                event.preventDefault();
+                                var form = $(this);
+                                var goalId = form.data('goal-id');
+                                var status = form.find('input[name="completed"]:checked').val();
+            
+                                updateGoalStatus(goalId, status);
+                            });
+            
+                        } else {
+                            $('#dailyGoalsCard').html('<p>No daily goal found for the selected date.</p>').show();
+                        }
+                    },
+                    error: function () {
+                        $('#dailyGoalsCard').html('<p>Failed to fetch daily goal.</p>').show();
+                    }
+                });
+            }
+            
+            function updateGoalStatus(goalId, status) {
+                var csrfToken = getCookie('csrftoken'); // Function to get CSRF token from cookies
+            
+                $.ajax({
+                    url: `/update-daily-goal-status/${goalId}/`,
+                    type: 'POST',
+                    data: {
+                        'completed': status,
+                        'csrfmiddlewaretoken': csrfToken
+                    },
+                    success: function (data) {
+                        alert('Goal status updated successfully!');
+                        fetchDailyGoals(selectedDate);  // Refresh the goals after update
+                    },
+                    error: function () {
+                        alert('An error occurred while updating the goal status.');
+                    }
+                });
+            }
+            
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            
+        
+            function updateCalendarWithGoals(yearlyGoalId) {
+                $.ajax({
+                    url: '/get-yearly-goal-dates/',
+                    type: 'GET',
+                    data: {
+                        'yearly_goal_id': yearlyGoalId
+                    },
+                    success: function (data) {
+                        associatedDates = [];  // Clear the previous associated dates
+                        var events = [];
+                        if (data.goal_dates && data.goal_dates.length > 0) {
+                            data.goal_dates.forEach(function (date) {
+                                associatedDates.push(date);
+                                events.push({
+                                    title: 'Goal',
+                                    start: date,
+                                    allDay: true,
+                                    backgroundColor: '#28a745',
+                                    borderColor: '#28a745'
+                                });
+                            });
+                        }
+                        // Remove all events and add the new ones
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('addEventSource', events);
+                    },
+                    error: function () {
+                        console.log('Failed to fetch goal dates.');
+                    }
+                });
+            }
+        });
+
+
+        
+</script>
+</body>
+</html>

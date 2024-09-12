@@ -1,0 +1,65 @@
+body {
+    background-color: rgba(254, 218, 224, 0.744);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    --primary-color: #fff;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px; /* Increased padding for better content spacing */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Full width for responsiveness */
+    max-width: 300px; /* Control width on larger screens */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth hover effect */
+    text-align: center; /* Center text inside the card */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Hover effect */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+button {
+    padding: 10px 20px; /* Adjust padding for better appearance */
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px; /* Add margin for spacing */
+    align-self: center; /* Center button in flex container */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Media Queries for Smaller Screens */
+@media (max-width: 600px) {
+    .card {
+        width: 90%; /* Make card occupy most of the width */
+        max-width: none; /* Remove max-width constraint */
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
+
+    button {
+        width: 100%; /* Full-width button on small screens */
+        padding: 12px; /* Adjust padding */
+    }
+}

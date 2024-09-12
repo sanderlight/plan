@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to a Plan</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Select Your Subscription Plan</h1>
+
+        <!-- Free Plan -->
+        <div class="plan">
+            <h3>Free Plan</h3>
+            <p>Includes 1 free goal creation. No recurring fees.</p>
+            <p><strong>Price: $0/month</strong></p>
+            <button disabled>Current Plan</button> <!-- Example of disabled button for current plan -->
+        </div>
+
+        <!-- Pay-Per-Goal Plan -->
+        <div class="plan">
+            <h3>Pay-Per-Goal Plan</h3>
+            <p>Create additional goals at $3 per goal.</p>
+            <p><strong>Price: $3 per goal</strong></p>
+            <form action="{% url 'purchase_goal' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Buy a Goal</button>
+            </form>
+        </div>
+
+        <!-- Unlimited Goals Plan -->
+        <div class="plan">
+            <h3>Unlimited Goals Plan</h3>
+            <p>Enjoy unlimited goal creation and tracking.</p>
+            <p><strong>Price: $10/month</strong></p>
+            <form action="{% url 'subscribe_unlimited' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Subscribe Now</button>
+            </form>
+        </div>
+
+        <!-- Payment Methods Section -->
+        <div class="payment-methods">
+            <h3>Select Payment Method</h3>
+            <p>We accept the following payment methods:</p>
+            <ul>
+                <li>Credit/Debit Card</li>
+                <li>PayPal</li>
+                <li>Bank Transfer</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
