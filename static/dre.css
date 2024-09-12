@@ -1,0 +1,83 @@
+/* General Body and Container Styles */
+body {
+    background-color: rgba(254, 218, 224, 0.744);
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+/* Card Styles */
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+}
+
+/* Header Styles */
+.card-header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Body Styles */
+.card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 200px; /* Adjust height as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+}
+
+/* Dropdown Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+select.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Goal Details */
+.goal-details {
+    margin-top: 10px;
+}
+
+.goal-details h5 {
+    margin: 0 0 10px;
+    font-size: 18px;
+}
+
+.goal-details p {
+    margin: 0;
+    color: #666;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 768px) {
+    .cards-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}

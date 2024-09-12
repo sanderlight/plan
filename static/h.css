@@ -1,0 +1,468 @@
+body {
+     background-color: rgba(254, 218, 224, 0.744);
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 60px 1fr;
+    grid-template-areas:
+        "side header"
+        "side main";
+    margin: 0;
+    overflow: hidden;
+}
+
+*{
+    box-sizing: border-box;
+    
+}
+
+
+
+
+
+
+fc {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Calendar Container */
+#calendar {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* FullCalendar Header */
+.fc-toolbar {
+    margin-bottom: 20px;
+}
+
+/* FullCalendar Buttons */
+.fc-button {
+    margin: 0 2px;
+    padding: 6px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.fc-button:hover,
+.fc-button:focus {
+    background-color: #0056b3;
+}
+
+.fc-button:disabled {
+    background-color: #d6d6d6;
+}
+
+/* FullCalendar Day Headers */
+.fc-day-header {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+/* FullCalendar Days */
+.fc-day {
+    height: 100px;
+    border: 1px solid #ddd;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.fc-day:hover {
+    background-color: #950606;
+}
+
+/* FullCalendar Events */
+.fc-event {
+    background-color: #007bff;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.fc-event:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+
+
+
+
+
+
+.sidebar {
+    grid-area: side;
+    background-color: transparent;
+    width: 200px;
+    transition: all .5s ease;
+}
+
+.sidebar.close {
+    width: 90px;
+}
+
+.logo-box {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    color: var(--pink);
+    transition: all .5s ease;
+    cursor: pointer;
+}
+
+.logo-box:hover {
+    color: var(--pink);
+}
+
+.logo-box i {
+    font-size: 30px;
+    height: 50px;
+    min-width: 78px;
+    text-align: center;
+    line-height: 50px;
+    transition: all .5s ease;
+}
+
+.sidebar.close .logo-box i {
+    transform: rotate(360deg);
+}
+
+.logo-name {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.sidebar-list {
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-list li .title .link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.sidebar-list li .title i {
+    height: 50px;
+    min-width: 78px;
+    text-align: center;
+    line-height: 50px;
+    color: var(--antiquewhite);
+    font-size: 20px;
+}
+
+.sidebar-list li .title .name {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--antiquewhite);
+}
+
+.sidebar.close .logo-name,
+.sidebar.close .title .name {
+    display: none;
+}
+
+.sidebar.close .sidebar-list {
+    overflow: visible;
+}
+
+.sidebar.close .sidebar-list li {
+    position: relative;
+}
+
+.sidebar.close .sidebar-list li .submenu {
+    position: relative;
+}
+
+.home {
+    grid-area: main;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.toggle-sidebar {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggle-sidebar .bx-menu {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+/* Adjust home section margin for closed sidebar */
+.sidebar.close ~ .home {
+    margin-left: 90px;
+}
+
+
+
+
+.main {
+    background-color: transparent;
+    padding: 20px;
+    grid-area: main;
+    display: flex; /* Use flexbox to center content */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    height: 100%; /* Full height to occupy the main area */
+    overflow: auto; /* Enable scrolling if needed */
+}
+
+.card {
+    border: 1px solid #000000;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0); /* Transparent background */
+    width: 300px; /* Set a specific width */
+    height: 300px; /* Set height to auto */
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for background and shadow */
+}
+
+.card:hover {
+    background-color: #ededed; /* Solid white on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.5); /* Increased shadow with glowing effect */
+}
+
+.card::before {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    content: "";
+   
+    border-radius: 15px;
+    z-index: -1;
+    transition: 0.3s;
+    animation: animate 2s linear infinite;
+}
+
+.card:hover::before {
+    height: 100%;
+    width: 100%;
+}
+
+
+.text-primary {
+    color: #000000 !important; 
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    font-weight: 700;
+}
+
+.card-header,
+.card-footer {
+    background-color: #00000000;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.card-body {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto; 
+    
+    width: 700px; /* Enable scrolling within card body */
+}
+
+.goal-content {
+    display: none;
+    width:500 px;
+    height: 200px;
+}
+
+.card-title {
+    margin-bottom: 0;
+}
+
+
+
+.completed {
+    color: green;
+    font-weight: bold;
+}
+.not-completed {
+    color: red;
+    font-weight: bold;
+}
+/* Customize progress bar colors */
+
+.content-container {
+    display: flex;
+    flex-direction: column; /* Align items in a column */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    width: 100%; /* Full width */
+    max-width: 800px; /* Limit max width */
+    padding: 20px; /* Add padding */
+    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white background */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+.radio-tile-group{
+
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+   
+
+}
+
+.input-container {
+
+    position: relative;
+    height: 7rem;
+    width: 7rem;
+    margin: 0.5rem;
+    text-align: center;
+}
+
+
+.input-container input{
+
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    cursor: pointer;
+    z-index: 2;
+    opacity: 0;
+
+}
+
+
+/* For the radio tiles */
+.input-container .radio-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    transition: all 300ms ease;
+    background-color: #fff;
+}
+
+
+
+.input-container label{
+
+    color: var(--primary-color);
+    font-size: 0.80rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+
+
+input:checked + .radio-tile {
+    background-color: rgb(white);
+    box-shadow: 0 0 12px var(--primary-color);
+}
+
+input:hover + .radio-tile{
+
+    box-shadow: 0 0 12px rgb(228, 228, 228);
+}
+
+
+input:checked + .radio-tile label{
+
+    color:white
+}
+
+
+
+.footer {
+
+    padding: 10px;
+     /* Border at the top of the footer */
+   
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+            "header"
+            "main"
+            "side";
+    }
+
+    .sidebar {
+        width: 100%;
+        grid-area: side;
+        display: flex;
+        justify-content: space-around;
+        border-top: 1px solid #ddd;
+        padding: 10px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        transition: none; /* Disable transition for mobile layout */
+    }
+
+    .main {
+        padding: 10px;
+        overflow-y: auto;
+    }
+
+    .card {
+        width: 90%; /* Increase width for mobile devices */
+        margin-bottom: 20px; /* Add space between cards */
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: 100%; /* Full width on small devices */
+        margin: 10px; /* Smaller margin */
+    }
+
+    .sidebar {
+        flex-direction: column; /* Vertical layout for sidebar */
+    }
+
+    .fc-button {
+        padding: 5px 8px; /* Smaller buttons for calendar */
+        font-size: 12px; /* Smaller font size */
+    }
+
+    .fc-day {
+        height: 80px; /* Smaller day cells */
+    }
+}

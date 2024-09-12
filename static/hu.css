@@ -1,0 +1,203 @@
+body {
+    background: linear-gradient(rgb(228, 228, 228), rgb(201, 0, 114));
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: 60px 1fr;
+    grid-template-areas:
+        "side header"
+        "side main";
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+  
+    font-family: Arial, sans-serif;
+}
+
+*{
+    box-sizing: border-box;
+    
+}
+
+.sidebar {
+    grid-area: side;
+    background-color: transparent;
+    width: 200px;
+    transition: all .5s ease;
+}
+
+.sidebar.close {
+    width: 90px;
+}
+
+.logo-box {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    color: var(--pink);
+    transition: all .5s ease;
+    cursor: pointer;
+}
+
+.logo-box:hover {
+    color: var(--pink);
+}
+
+.logo-box i {
+    font-size: 30px;
+    height: 50px;
+    min-width: 78px;
+    text-align: center;
+    line-height: 50px;
+    transition: all .5s ease;
+}
+
+.sidebar.close .logo-box i {
+    transform: rotate(360deg);
+}
+
+.logo-name {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.sidebar-list {
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-list li .title .link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.sidebar-list li .title i {
+    height: 50px;
+    min-width: 78px;
+    text-align: center;
+    line-height: 50px;
+    color: var(--antiquewhite);
+    font-size: 20px;
+}
+
+.sidebar-list li .title .name {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--antiquewhite);
+}
+
+.sidebar.close .logo-name,
+.sidebar.close .title .name {
+    display: none;
+}
+
+.sidebar.close .sidebar-list {
+    overflow: visible;
+}
+
+.sidebar.close .sidebar-list li {
+    position: relative;
+}
+
+.sidebar.close .sidebar-list li .submenu {
+    position: relative;
+}
+
+.home {
+    grid-area: main;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.toggle-sidebar {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggle-sidebar .bx-menu {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+/* Adjust home section margin for closed sidebar */
+.sidebar.close ~ .home {
+    margin-left: 90px;
+}
+
+
+
+
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px; /* Adjust based on your preference */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container, .results-container {
+
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Set the maximum width */
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.form-group input, 
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+    white-space: nowrap; /* Prevent text from wrapping to the next line */
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.results-container h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.results-container p {
+    margin: 5px 0;
+    font-size: 14px;
+}

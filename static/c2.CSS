@@ -1,0 +1,86 @@
+body {
+    background-color: rgba(254, 218, 224, 0.744);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    --primary-color: #fff;
+}
+
+
+/* Styles for the carousel */
+.carousel-item {
+    text-align: center; /* Center align content */
+    padding: 20px; /* Add padding around carousel items */
+}
+
+/* Card Styles */
+.day-plan.card {
+    margin: 0 auto; /* Center the card */
+    max-width: 600px; /* Set a maximum width for the card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Ensure content stays within rounded corners */
+}
+
+.day-plan .card-body {
+    padding: 20px; /* Internal padding for card content */
+}
+
+.day-plan .card-title {
+    font-size: 1.5rem; /* Larger font size for titles */
+    font-weight: bold; /* Bold titles */
+    color: #007bff; /* Blue color for card title */
+}
+
+.day-plan .card-text {
+    font-size: 1rem; /* Regular font size for text */
+    color: #333; /* Darker color for better readability */
+}
+
+/* Carousel Controls */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #007bff; /* Blue background for carousel icons */
+    border-radius: 50%; /* Circular icons */
+    padding: 10px; /* Padding around icons */
+}
+
+.carousel-control-prev-icon {
+    border: 2px solid #fff; /* White border around the icon */
+}
+
+.carousel-control-next-icon {
+    border: 2px solid #fff; /* White border around the icon */
+}
+
+/* Navigation Button */
+.btn-secondary {
+    margin-top: 20px; /* Add margin above the back button */
+    background-color: #6c757d; /* Dark gray color */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Button padding */
+    font-size: 1rem; /* Font size */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268; /* Slightly darker on hover */
+}
+
+
+
+h1.text-center {
+    color: #007bff; /* Blue color for the main heading */
+    margin-bottom: 30px; /* Margin below heading */
+}
