@@ -198,75 +198,7 @@ def profile_view(request):
 
 from django.conf import settings
 
-stripe.api_key = settings.STRIPE_SECRET_KEY  # Set your secret key
 
-
-@login_required
-def purchase_goal(request):
-    if request.method == 'POST':
-        token = request.POST.get('stripeToken')
-        amount = 30  # Amount in cents
-
-        try:
-            # Create a charge
-            charge = stripe.Charge.create(
-                amount=amount,
-                currency='usd',
-                description='Goal Purchase',
-                source=token,
-            )
-
-            # Process the goal purchase
-            profile = request.user.profile
-            profile.goals_purchased += 1
-            profile.save()
-
-            messages.success(request, "Goal purchased successfully!")
-            return redirect('profile_view')
-        except stripe.error.CardError as e:
-            messages.error(request, f"Payment failed: {e.user_message}")
-            return redirect('subscription_payment_page')
-
-
-
-
-
-
-
-@login_required
-def subscribe_unlimited(request):
-    if request.method == 'POST':
-        token = request.POST.get('stripeToken')
-
-        try:
-            # Create a customer and subscribe to a plan
-            customer = stripe.Customer.create(
-                email=request.user.email,
-                source=token,
-            )
-
-            subscription = stripe.Subscription.create(
-                customer=customer.id,
-                items=[
-                    {'price': 'your-price-id'},  # Replace with your actual price ID
-                ],
-                expand=['latest_invoice.payment_intent'],
-            )
-
-            # Update the user's profile to reflect the subscription
-            profile = request.user.profile
-            profile.subscription_type = 'Paid'
-            profile.subscription_end_date = subscription.current_period_end
-            profile.save()
-
-            messages.success(request, "Subscribed to Unlimited Goals successfully!")
-            return redirect('profile_view')
-        except stripe.error.StripeError as e:
-            messages.error(request, f"Subscription failed: {e.user_message}")
-            return redirect('subscription_payment_page')
-        
-        
-        
         
         
         
