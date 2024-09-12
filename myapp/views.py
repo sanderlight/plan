@@ -196,7 +196,6 @@ def profile_view(request):
 
 
 
-import stripe
 from django.conf import settings
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  # Set your secret key
