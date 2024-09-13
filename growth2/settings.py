@@ -136,7 +136,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = ["C:/Users/kenne/Desktop/projects/planner2/growth2/static"]
+STATICFILES_DIRS = ["static"]
 
 
 # Default primary key field type
