@@ -55,10 +55,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "growth2.urls"
 
+
+
+WSGI_APPLICATION = "growth2.wsgi.application"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["C:\\Users\\kenne\\Desktop\\projects\\planner2\\growth2\\templates"],
+        "DIRS": ["templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
