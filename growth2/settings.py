@@ -136,12 +136,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 
-STATIC_URL = "static"
-
-STATIC_ROOT = "static"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_URL = "static/"
 STATICFILES_DIRS = ["C:/Users/kenne/Desktop/projects/planner2/growth2/static"]
 
+STATICFILES_STORAGE = "whitenoise.storage/CompressedManifestDtaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
