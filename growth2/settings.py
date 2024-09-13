@@ -137,7 +137,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = ["C:/Users/kenne/Desktop/projects/planner2/growth2/static"]
+STATICFILES_DIRS = ["static"]
+STATIC_ROOT = "static"
 
 STATICFILES_STORAGE = "whitenoise.storage/CompressedManifestDtaticFilesStorage"
 
