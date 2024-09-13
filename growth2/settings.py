@@ -75,7 +75,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "growth2.wsgi.application"
+
 
 
 # Database
