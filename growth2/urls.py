@@ -22,7 +22,7 @@ from django.urls import path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('/', views.index, name='index'),
+    path('', views.index, name='index'),
     
     path('generate_long_term_goal', views.generate_long_term_goal, name='generate_long_term_goal'),
     path('login/', views.user_login, name='login'),
@@ -41,7 +41,7 @@ urlpatterns = [
      path('goal-simulation/', views.goal_simulation, name='goal_simulation'),
     path('api/analytics/', views.analytics_data_view, name='analytics_data'),
      path('generate-goals/', views.generate_goals, name='generate_goals'),
-    path('get-yearly-goal-dates/', views.get_yearly_goal_dates_view, name='get_yearly_goal_dates'),
+    path('get-yearly-goal-dates/', views.get_goal_dates_view, name='get_goal_dates'),
     path('api/yearly_goals/', views.get_yearly_goals, name='get_yearly_goals'),
     path('api/monthly_goals/', views.get_monthly_goals, name='get_monthly_goals'),
     path('api/weekly_goals/', views.get_weekly_goals, name='get_weekly_goals'),
@@ -58,17 +58,18 @@ urlpatterns = [
     
     
     
-    path('get_monthly_goals/', views.get_monthly_goals, name='get_monthly_goals'),
-    path('get_weekly_goals/', views.get_weekly_goals, name='get_weekly_goals'),
-    path('get_daily_goals/', views.get_daily_goals, name='get_daily_goals'),
+    path('get_monthly_goalss/', views.get_monthly_goalss, name='get_monthly_goalss'),
+    path('get_monthly_goal_details/', views.get_monthly_goal_details, name='get_monthly_goal_details'),
+    path('get_weekly_goals/', views.get_weekly_goalss, name='get_weekly_goals'),
+    path('get_daily_goals/', views.get_daily_goalss, name='get_daily_goals'),
     path('get_wgoal_details/', views.get_wgoal_details, name='get_wgoal_details'),
-    path('get_dgoal_details/', views.get_dgoal_details, name='get_dgoal_details'),
+    path(' get_dgoals/', views.get_dgoals, name='get_dgoal_details'),
     path('get_d1_goals/', views.get_d1_goals, name='get_d1_goals'),
+    path('weekly_goals/', views.get_weekly_goals, name='weekly_goals'),
+    path('get_dgoals/', views.get_dgoals, name='get_dgoals'), 
     
     
-    
-    
-    
+    path('goals/', views.goals_view, name='goals_view'),  # Add this line for the goals view  
     
     
     
