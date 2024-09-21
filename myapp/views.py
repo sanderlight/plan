@@ -196,9 +196,78 @@ def profile_view(request):
 
 
 
+import stripe
 from django.conf import settings
 
+stripe.api_key = settings.STRIPE_SECRET_KEY  # Set your secret key
 
+
+@login_required
+def purchase_goal(request):
+    if request.method == 'POST':
+        token = request.POST.get('stripeToken')
+        amount = 30  # Amount in cents
+
+        try:
+            # Create a charge
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency='usd',
+                description='Goal Purchase',
+                source=token,
+            )
+
+            # Process the goal purchase
+            profile = request.user.profile
+            profile.goals_purchased += 1
+            profile.save()
+
+            messages.success(request, "Goal purchased successfully!")
+            return redirect('profile_view')
+        except stripe.error.CardError as e:
+            messages.error(request, f"Payment failed: {e.user_message}")
+            return redirect('subscription_payment_page')
+
+
+
+
+
+
+
+@login_required
+def subscribe_unlimited(request):
+    if request.method == 'POST':
+        token = request.POST.get('stripeToken')
+
+        try:
+            # Create a customer and subscribe to a plan
+            customer = stripe.Customer.create(
+                email=request.user.email,
+                source=token,
+            )
+
+            subscription = stripe.Subscription.create(
+                customer=customer.id,
+                items=[
+                    {'price': 'your-price-id'},  # Replace with your actual price ID
+                ],
+                expand=['latest_invoice.payment_intent'],
+            )
+
+            # Update the user's profile to reflect the subscription
+            profile = request.user.profile
+            profile.subscription_type = 'Paid'
+            profile.subscription_end_date = subscription.current_period_end
+            profile.save()
+
+            messages.success(request, "Subscribed to Unlimited Goals successfully!")
+            return redirect('profile_view')
+        except stripe.error.StripeError as e:
+            messages.error(request, f"Subscription failed: {e.user_message}")
+            return redirect('subscription_payment_page')
+        
+        
+        
         
         
         
@@ -286,6 +355,7 @@ def generate_long_term(request):
                     max_tokens=30
                 )
                 long_term_goal = response.choices[0].message['content'].strip()
+                request.session['long_term_goal'] = long_term_goal
             else:
                 long_term_goal = f"This is a long-term goal generated based on the selected option: {option}"
             
@@ -575,7 +645,6 @@ from django.shortcuts import render, redirect
   
 
 TimeframeForm
-from django.shortcuts import render, redirect
 
 
 
@@ -583,27 +652,21 @@ from django.shortcuts import render, redirect
 @login_required
 def setup_goal_view(request):
     if request.method == 'POST':
-        
+        # Retrieve the long-term goal from POST data or session
         long_term_goal = request.POST.get('long_term_goal') or request.session.get('long_term_goal')
         
+        if not long_term_goal:
+            return JsonResponse({'error': 'Long-term goal not provided'}, status=400)
+
         print(f"Long-term goal retrieved: {long_term_goal}")  # Debugging line
-       
-        
-        
+
+        # Process the form
         form = TimeframeForm(request.POST)
-        
         if form.is_valid():
             timeframe_unit = form.cleaned_data['timeframe_unit']
             timeframe_value = form.cleaned_data['timeframe_value']
-            long_term_goal = request.POST.get('long_term_goal')
-            # Retrieve 'long_term_goal' directly from POST data
-            print(f"Long-term goal retrieved: {long_term_goal}")  # Debugging line
 
-
-            if not long_term_goal:
-                return JsonResponse({'error': 'Long-term goal not provided'}, status=400)
-
-            # Save the new objective instance
+            # Save the new objective
             new_objective = Objective(
                 profile=request.user.profile, 
                 timeframe_unit=timeframe_unit,
@@ -611,10 +674,10 @@ def setup_goal_view(request):
             )
             new_objective.save()
 
-            # Store 'long_term_goal' in the session for later use
-            request.session['long_term_goal '] = long_term_goal
+            # Store the long-term goal in session for future use
+            request.session['long_term_goal'] = long_term_goal
 
-            # Define determine_redirect_url function if not already
+            # Function to determine the redirect URL based on timeframe unit
             def determine_redirect_url(timeframe_unit):
                 if timeframe_unit == 'days':
                     return reverse('generate_day_plan')
@@ -627,13 +690,22 @@ def setup_goal_view(request):
                 else:
                     return reverse('default_page')
 
-            # Use the determine_redirect_url function
+            # Redirect based on timeframe unit
             redirect_url = determine_redirect_url(timeframe_unit)
             return redirect(redirect_url)
     else:
+        # If the request is GET, load an empty form and check for long-term goal in session
         form = TimeframeForm()
+        long_term_goal = request.session.get('long_term_goal', None)
 
-    return render(request, 'setup_goal.html', {'form': form})
+    # Render the form template, including the long-term goal if it exists
+    return render(request, 'setup_goal.html', {
+        'form': form,
+        'long_term_goal': long_term_goal
+    })
+
+
+
 
 
 
@@ -645,20 +717,24 @@ def setup_goal_view(request):
 
 def generate_month_plan(request):
     if request.method == 'POST':
+        # Get long-term goal from POST or session
         long_term_goal = request.POST.get('long_term_goal') or request.session.get('long_term_goal')
-        
-        
+
+        print(f"Long-term goal in session: {request.session.get('long_term_goal')}")
+
+
+
+        if not long_term_goal:
+            return JsonResponse({'error': 'Long-term goal not provided or missing from session'}, status=400)
+
         print(f"Long-term goal retrieved: {long_term_goal}")  # Debugging line
 
         try:
             # Retrieve timeframe_unit and timeframe_value from POST data
             timeframe_unit = request.POST.get('timeframe_unit')
             timeframe_value = request.POST.get('timeframe_value')
-           
 
-            if not long_term_goal:
-                return JsonResponse({'error': 'Long-term goal not provided or missing from session'}, status=400)
-
+            # Check for missing or invalid data
             if not timeframe_unit or not timeframe_value:
                 return JsonResponse({'error': 'Timeframe unit or value not provided'}, status=400)
 
@@ -672,7 +748,12 @@ def generate_month_plan(request):
             profile = get_object_or_404(Profile, user=request.user)
 
             # Determine the number of months based on the timeframe unit
-            num_months = timeframe_value if timeframe_unit == 'months' else 12  # Default to 12 months if not 'months'
+            if timeframe_unit == 'months':
+                num_months = timeframe_value
+            elif timeframe_unit == 'years':
+                num_months = timeframe_value * 12  # Convert years to months
+            else:
+                return JsonResponse({'error': 'Invalid timeframe unit'}, status=400)
 
             # Generate month-to-month plans using OpenAI GPT-4
             month_to_month_plans = []
@@ -683,24 +764,25 @@ def generate_month_plan(request):
                     messages=[{"role": "user", "content": month_prompt}],
                     max_tokens=50
                 )
-                month_plan = response.choices[0].message['content'].strip()
+                month_plan = response.choices[0]['message']['content'].strip()
 
-                # Create a new M instance (MonthlyGoal)
+                # Create a new MonthlyGoal instance (assuming M model for monthly goals)
                 monthly_goal = M.objects.create(
+                    title=long_term_goal,
                     month_number=month,
                     month_description=month_plan,
                     profile=profile  # Save the profile of the currently logged-in user
                 )
                 month_to_month_plans.append(monthly_goal)
-                
 
-            # Render the month plan template with the generated month-to-month plans
+            # Render the month plan template with the generated plans
             return render(request, 'months.html', {'month_to_month_plans': month_to_month_plans})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 
 
@@ -850,7 +932,7 @@ def generate_day_plan(request):
     if request.method == 'POST':
         # Retrieve form data
              # Retrieve long_term_goal from session
-        long_term_goal = request.session.get('long_term_goal')
+        long_term_goal = request.POST.get('long_term_goal') or request.session.get('long_term_goal')
         timeframe_unit = request.POST.get('timeframe_unit')
         timeframe_value = request.POST.get('timeframe_value')
 
@@ -879,7 +961,7 @@ def generate_day_plan(request):
                 # Create a new D1 instance with the correct profile
                 daily_goal = D1.objects.create(
                     profile=request.user,  # Correctly set the profile
-                    title=f"Day {day} Plan",
+                    title=long_term_goal,
                     description=day_plan,
                     date=timezone.now().date() + timedelta(days=day - 1),  # Set the date for each day
                     start_date=timezone.now().date()  # Ensure start_date is set if required
@@ -909,7 +991,8 @@ def generate_week_to_week_plan(request):
     """
     if request.method == 'POST':
         # Retrieve data from the form and session
-        long_term_goal = request.session.get('long_term_goal', '')
+        long_term_goal = request.POST.get('long_term_goal') or request.session.get('long_term_goal')
+
         timeframe_unit = request.POST.get('timeframe_unit')
         timeframe_value = request.POST.get('timeframe_value')
 
@@ -930,7 +1013,7 @@ def generate_week_to_week_plan(request):
                 response = openai.ChatCompletion.create(
                     model="gpt-4",
                     messages=[{"role": "user", "content": week_prompt}],
-                    max_tokens=150  # Increased max tokens for more comprehensive output
+                    max_tokens=350  # Increased max tokens for more comprehensive output
                 )
                 week_plan = response.choices[0].message['content'].strip()
 
@@ -940,7 +1023,8 @@ def generate_week_to_week_plan(request):
                 # Create a new WeeklyGoal instance with the required profile field
                 weekly_goal = WGoal.objects.create(
                     week_number=week,
-                    goal_text=long_term_goal,
+                    title=long_term_goal,
+               
                     week_description=week_plan,
                     profile=profile,  # Make sure to set the profile
                     start_date=datetime.date.today()  # Ensure start_date is set if required
@@ -950,7 +1034,7 @@ def generate_week_to_week_plan(request):
             # Render the week plan template with the generated week-to-week plans
             return render(request, 'week_goal.html', {
                 'week_to_week_plans': week_to_week_plans,
-                'goal_text': long_term_goal
+             
             })
 
         except Exception as e:
@@ -960,42 +1044,55 @@ def generate_week_to_week_plan(request):
     return HttpResponseBadRequest("Invalid request method. Use POST to submit data.")
 
 
+@login_required
 def generate_week_to_day_plan(request, week_goal_id):
-    """
-    View to generate day-to-day plans for a specific week goal.
-    """
+
     try:
-        # Retrieve the WeeklyGoal instance using the provided week_goal_id
+        # Retrieve the WeeklyGoal instance
         weekly_goal = get_object_or_404(WGoal, id=week_goal_id)
-        day_to_day_plans = []
+        profile = weekly_goal.profile
 
-        # Ensure the user has a profile
-        profile = weekly_goal.profile  # Assuming WGoal has a profile field
+        # Get the specific day number from the request, defaulting to day 1
+        day_number = int(request.GET.get('day_number', 1))
 
-        # Define the number of days (example: 7 days for simplicity)
-        num_days = 7
+        if day_number < 1 or day_number > 7:
+            return JsonResponse({'error': 'Day number must be between 1 and 7'}, status=400)
 
-        # Generate day-to-day plans using OpenAI GPT-4 or other logic
-        for day in range(1, num_days + 1):
-            day_prompt = f"What are the steps to achieve the goal '{weekly_goal.goal_text}' for day {day} of week {weekly_goal.week_number}?"
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[{"role": "user", "content": day_prompt}],
-                max_tokens=50
-            )
-            day_plan = response.choices[0].message['content'].strip()
+        # Generate the day plan
+        day_prompt = (
+            f"What are the steps to achieve the goal '{weekly_goal.title}' "
+            f"for day {day_number} of week {weekly_goal.week_number}?"
+        )
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": day_prompt}],
+            max_tokens=300
+        )
+        
+        # Log or print GPT-4 response
+        print(f"GPT-4 Response: {response}")
+        
+        day_plan = response.choices[0].message['content'].strip()
 
-            # Create a new DailyGoal instance with the required fields
-            daily_goal = DGoal.objects.create(
-                weekly_goal=weekly_goal,
-                day_number=day,
-                day_description=day_plan,
-                profile=profile,  # Make sure to set the profile
-                start_date=datetime.date.today()  # Set start_date
-            )
-            day_to_day_plans.append(daily_goal)
+        if not day_plan:
+            return JsonResponse({'error': 'Failed to generate a valid day plan'}, status=400)
 
-        return render(request, 'week_to_day.html', {'day_to_day_plans': day_to_day_plans, 'weekly_goal': weekly_goal})
+        # Create and return the DailyGoal instance
+        daily_goal = DGoal.objects.create(
+            weekly_goal=weekly_goal,
+            day_number=day_number,
+            day_description=day_plan,
+            profile=profile,
+            start_date=datetime.date.today()
+        )
+
+        # Debugging: Log the daily goal
+        print(f"Daily Goal Created: {daily_goal}")
+
+        return render(request, 'week_to_day.html', {
+            'daily_goal': daily_goal,
+            'weekly_goal': weekly_goal,
+        })
 
     except WGoal.DoesNotExist:
         return JsonResponse({'error': 'Weekly goal not found'}, status=404)
@@ -1353,25 +1450,90 @@ def daily_goal_detail_view(request):
 
 
 
+def get_goal_dates_view(request):
+    # Get the goal ID and type (yearly, monthly, or weekly) from the request
+    goal_type = request.GET.get('goal_type')
+    goal_id = request.GET.get('goal_id')
 
-def get_yearly_goal_dates_view(request):
-    yearly_goal_id = request.GET.get('yearly_goal_id')
-    if not yearly_goal_id:
-        return JsonResponse({'error': 'Yearly goal ID not provided.'}, status=400)
+    if not goal_type or not goal_id:
+        return JsonResponse({'error': 'Goal type or ID not provided.'}, status=400)
 
     try:
-        # Retrieve the yearly goal and associated daily goals
-        yearly_goal = YearlyGoal.objects.get(id=yearly_goal_id)
-        daily_goals = DailyGoal.objects.filter(yearly_goal=yearly_goal)
+        goal_dates = []
 
-        # Extract the unique dates of the daily goals
-        goal_dates = list(daily_goals.values_list('date', flat=True).distinct())
+        # Handle Yearly Goals
+        if goal_type == 'yearly':
+            yearly_goal = YearlyGoal.objects.get(id=goal_id)
+            daily_goals = DailyGoal.objects.filter(yearly_goal=yearly_goal)
+            goal_dates = list(daily_goals.values_list('date', flat=True).distinct())
+
+        # Handle Monthly Goals
+        elif goal_type == 'monthly':
+            monthly_goal = M.objects.get(id=goal_id)
+            daily_goals = DailyGoal.objects.filter(yearly_goal__monthly_goal=monthly_goal)
+            goal_dates = list(daily_goals.values_list('date', flat=True).distinct())
+
+        # Handle Weekly Goals
+        elif goal_type == 'weekly':
+            weekly_goal = WGoal.objects.get(id=goal_id)
+            daily_goals = DailyGoal.objects.filter(yearly_goal__weekly_goal=weekly_goal)
+            goal_dates = list(daily_goals.values_list('date', flat=True).distinct())
+
+        # If no valid goal type is provided
+        else:
+            return JsonResponse({'error': 'Invalid goal type.'}, status=400)
 
         return JsonResponse({'goal_dates': goal_dates}, status=200)
-    except YearlyGoal.DoesNotExist:
-        return JsonResponse({'error': 'Yearly goal not found.'}, status=404)
+    
+    except (YearlyGoal.DoesNotExist, M.DoesNotExist, WGoal.DoesNotExist):
+        return JsonResponse({'error': 'Goal not found.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+
+
+
+
+
+def goals_view(request):
+    # Fetch all goals from the respective models
+    m_goals = M.objects.all()
+    w_goals = WGoal.objects.all()
+    d1_goals = D1.objects.all()
+
+    # Structure the data to return in the JSON response
+    data = {
+        'monthly_goals': [
+            {
+                'id': goal.id,
+                'title': goal.title,
+                'description': goal.month_description,
+            } for goal in m_goals
+        ],
+        'weekly_goals': [
+            {
+                'id': goal.id,
+                'title': goal.title,
+                'description': goal.week_description,
+            } for goal in w_goals
+        ],
+        'daily_goals': [
+            {
+                'id': goal.id,
+                'title': goal.title,
+                'description': goal.description,
+                'date': goal.date.strftime('%Y-%m-%d'),  # Ensure date is serialized properly
+                'completed': goal.completed,
+            } for goal in d1_goals
+        ]
+    }
+
+    # Return the data as a JsonResponse
+    return JsonResponse(data, safe=False)
+
+
+
 
 
 
@@ -1497,51 +1659,167 @@ def get_daily_goal_details(request):
     
 
 
-def get_monthly_goals(request):
-    profile_id = request.GET.get('profile_id')
-    monthly_goals = M.objects.filter(profile_id=profile_id)
-    data = [{'id': goal.id, 'month_number': goal.month_number, 'month_description': goal.month_description} for goal in monthly_goals]
+
+
+
+def get_monthly_goalss(request):
+    profile = Profile.objects.get(user=request.user)  # Get the current user's profile
+    m_goals = M.objects.filter(profile=profile)  # Fetch monthly goals for the user
+
+    data = [{
+        'id': goal.id,
+        'month_number': goal.month_number,
+        'month_description': goal.month_description
+    } for goal in m_goals]
+
     return JsonResponse(data, safe=False)
+
+
+
+
+
+
+
+def get_monthly_goal_details(request):
+    goal_id = request.GET.get('id')
+    try:
+        goal = M.objects.get(id=goal_id)  # Assuming M is your model for monthly goals
+        data = {'title': goal.month_number, 'description': goal.month_description}
+        return JsonResponse(data)
+    except M.DoesNotExist:
+        return JsonResponse({'error': 'Monthly goal not found'}, status=404)
+    
+    
+    
+def get_weekly_goalss(request):
+    profile = Profile.objects.get(user=request.user)
+    month_id = request.GET.get('month_id')
+
+    # Fetch weekly goals based on the selected monthly goal (month_id) and user profile
+    weekly_goals = W.objects.filter(month_goal_id=month_id, month_goal__profile=profile)
+
+    # Prepare the data to send back as JSON
+    data = [{
+        'id': goal.id,
+        'week_number': goal.week_number,
+        'week_description': goal.week_description
+    } for goal in weekly_goals]
+
+    return JsonResponse(data, safe=False)
+
+    
+
+
+
+
+def get_daily_goalss(request):
+    profile = Profile.objects.get(user=request.user)  # Get the current user's profile
+    week_id = request.GET.get('week_id')  # Get the selected week ID from the request
+
+    if not week_id:
+        return JsonResponse({'error': 'Missing week_id'}, status=400)
+
+    # Fetch daily goals associated with the provided week ID
+    daily_goals = D.objects.filter(week_goal_id=week_id)
+
+    data = [{
+        'id': goal.id,
+        'day_number': goal.day_number,
+        'day_description': goal.day_description
+    } for goal in daily_goals]
+
+    if data:
+        return JsonResponse(data, safe=False)
+    else:
+        return JsonResponse({'error': 'No daily goals found'}, status=404)
+
+
 
 def get_weekly_goals(request):
-    month_id = request.GET.get('month_id')
-    weekly_goals = W.objects.filter(month_goal_id=month_id)
-    data = [{'id': goal.id, 'week_number': goal.week_number, 'week_description': goal.week_description} for goal in weekly_goals]
-    return JsonResponse(data, safe=False)
+    profile_id = request.GET.get('profile_id')
+    try:
+        profile = Profile.objects.get(id=profile_id)
+        weekly_goals = WGoal.objects.filter(profile=profile)
 
-def get_daily_goals(request):
-    week_id = request.GET.get('week_id')
-    daily_goals = D.objects.filter(week_goal_id=week_id)
-    data = [{'id': goal.id, 'day_number': goal.day_number, 'day_description': goal.day_description} for goal in daily_goals]
-    return JsonResponse(data, safe=False)
+        data = [{
+            'id': goal.id,
+            'week_number': goal.week_number,
+            'week_description': goal.week_description,
+            'start_date': goal.start_date.strftime('%Y-%m-%d'),
+        } for goal in weekly_goals]
+
+        return JsonResponse(data, safe=False)
+    except Profile.DoesNotExist:
+        return JsonResponse({'error': 'Profile not found.'}, status=404)
+    
+    
+    
 
 def get_wgoal_details(request):
-    wgoal_id = request.GET.get('wgoal_id')
-    wgoal = get_object_or_404(WGoal, id=wgoal_id)
-    data = {
-        'id': wgoal.id,
-        'goal_text': wgoal.goal_text,
-        'week_number': wgoal.week_number,
-        'week_description': wgoal.week_description,
-        'start_date': wgoal.start_date,
-    }
-    return JsonResponse(data)
+    profile = Profile.objects.get(user=request.user)  # Get the current user's profile
+    wgoals = WGoal.objects.filter(profile=profile)  # Fetch all weekly goals for the profile
+    
+    data = [{
+        'id': goal.id,
+        'week_number': goal.week_number,
+        'week_description': goal.week_description
+    } for goal in wgoals]  # Convert to JSON serializable format
+    
+    return JsonResponse(data, safe=False) 
 
-def get_dgoal_details(request):
-    dgoal_id = request.GET.get('dgoal_id')
-    dgoal = get_object_or_404(DGoal, id=dgoal_id)
-    data = {
-        'id': dgoal.id,
-        'day_number': dgoal.day_number,
-        'day_description': dgoal.day_description,
-        'start_date': dgoal.start_date,
-    }
-    return JsonResponse(data)
+
+
+    
+def get_dgoals(request):
+    weekly_goal_id = request.GET.get('weekly_goal_id')
+    
+    if not weekly_goal_id:
+        return JsonResponse({'error': 'No weekly goal ID provided.'}, status=400)
+    
+    profile = Profile.objects.get(user=request.user)  # Get current user's profile
+    
+    weekly_goal = get_object_or_404(WGoal, id=weekly_goal_id, profile=profile)  # Ensure the weekly goal belongs to the profile
+    
+    # Filter daily goals based on the selected weekly goal
+    daily_goals = DGoal.objects.filter(weekly_goal=weekly_goal)
+    
+    # Prepare the response data for JSON
+    data = [{
+        'id': goal.id,
+        'day_number': goal.day_number,
+        'start_date': goal.start_date.strftime('%Y-%m-%d'),
+        'day_description': goal.day_description,
+    } for goal in daily_goals]
+    
+    # Return the daily goals as JSON
+    return JsonResponse(data, safe=False)
+    
+
+    
+    
+
+
+
 
 def get_d1_goals(request):
-    profile_id = request.GET.get('profile_id')
+    profile_id = request.GET.get('profile_id')  # Get profile ID from request parameters
+    
+    if not profile_id:  # Check if profile_id is provided
+        return JsonResponse({'error': 'No profile ID provided.'}, status=400)
+    
+    # Fetch D1 goals for the given profile ID
     d1_goals = D1.objects.filter(profile_id=profile_id)
-    data = [{'id': goal.id, 'title': goal.title, 'description': goal.description, 'date': goal.date, 'completed': goal.completed} for goal in d1_goals]
+    
+    # Prepare the response data
+    data = [{
+        'id': goal.id,
+        'title': goal.title,
+        'description': goal.description,
+        'date': goal.date.strftime('%Y-%m-%d'),
+        'completed': goal.completed
+    } for goal in d1_goals]
+    
+    # Return the data as JSON
     return JsonResponse(data, safe=False)
 
 
