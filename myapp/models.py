@@ -143,7 +143,7 @@ class UserAnalyticsData(models.Model):
 DEFAULT_PROFILE_ID = 1
 
 class M(models.Model):  # Renamed from MonthlyGoal
-   
+    title = models.CharField(max_length=100, default="Default Title" )
     month_number = models.IntegerField()
     month_description = models.TextField()
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=DEFAULT_PROFILE_ID)
@@ -178,15 +178,15 @@ class D(models.Model):  # Renamed from DailyGoal
     
     
 class WGoal(models.Model):
-    goal_text = models.CharField(max_length=255)
-   
+
+    title = models.CharField(max_length=255, null=False, default="Default Title")
     week_number = models.PositiveIntegerField()
     week_description = models.TextField()
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=DEFAULT_PROFILE_ID)
     start_date = models.DateField(default=datetime.date.today)
 
     def __str__(self):
-        return f"Week {self.week_number} - {self.goal_text}"
+        return f"Week {self.week_number} - {self.title}"
 
 # Daily Goal Model
 class DGoal(models.Model):
@@ -204,7 +204,7 @@ class DGoal(models.Model):
 
 class D1(models.Model):
     profile = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=100, default="Default Title" )
     description = models.TextField()
     date = models.DateField()
     completed = models.BooleanField(default=False)
